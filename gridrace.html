@@ -11,11 +11,21 @@
 var carPic = document.createElement("img");
 var carPicLoaded = false;
 
+const KEY_LEFT_ARROW = 37;
+const KEY_UP_ARROW = 38;
+const KEY_RIGHT_ARROW = 39;
+const KEY_DOWN_ARROW = 40;
+
+var keyHeld_Gas = false;
+var keyHeld_Reverse = false;
+var keyHeld_TurnLeft = false;
+var keyHeld_TurnRight = false;
+
 
 var carX = 75;
 var carY = 75;
 var carAng = 0;
-var carSpeed = 2;
+var carSpeed = 0;
 
 
 const TRACK_W = 40;
@@ -59,6 +69,40 @@ function updateMousePos(evt){
 	carSpeedY = -4;*/
 }
 
+function keyPressed(evt) {
+   //console.log("Key pressed: "+evt.keyCode);
+   if(evt.keyCode == KEY_LEFT_ARROW) {
+       keyHeld_TurnLeft = true;
+   }
+   if(evt.keyCode == KEY_RIGHT_ARROW) {
+    keyHeld_TurnRight = true;
+   }
+   if(evt.keyCode == KEY_UP_ARROW) {
+    keyHeld_Gas = true;
+   }
+   if(evt.keyCode == KEY_DOWN_ARROW) {
+    keyHeld_Reverse = true;
+   }
+   //This was supposed to stop scrolling which I did not have issues with
+   //instead it broke F5 refresh from working so it has been removed
+   //evt.preventDefault();
+}
+
+function keyReleased(evt) {
+   if(evt.keyCode == KEY_LEFT_ARROW) {
+       keyHeld_TurnLeft = false;
+   }
+   if(evt.keyCode == KEY_RIGHT_ARROW) {
+    keyHeld_TurnRight = false;
+   }
+   if(evt.keyCode == KEY_UP_ARROW) {
+    keyHeld_Gas = false;
+   }
+   if(evt.keyCode == KEY_DOWN_ARROW) {
+    keyHeld_Reverse = false;
+   }
+}
+
 window.onload = function() {
 	canvas = document.getElementById('gameCanvas');
 	canvasContext = canvas.getContext('2d');
@@ -67,6 +111,9 @@ window.onload = function() {
 	setInterval(updateAll, 1000/framesPerSecond);
 	
 	canvas.addEventListener('mousemove', updateMousePos);
+
+    document.addEventListener('keydown', keyPressed);
+    document.addEventListener('keyup', keyReleased);
 
     carPic.onload = function() {
         carPicLoaded = true;
@@ -87,6 +134,7 @@ function carReset() {
 			var arrayIndex = rowColToArrayIndex(eachCol, eachRow);
 			if(trackGrid[arrayIndex] == 2){
                 trackGrid[arrayIndex] == 0;
+                carAng = -Math.PI/2;
                 carX = eachCol * TRACK_W + TRACK_W/2;
                 carY = eachRow * TRACK_H + TRACK_H/2;
             }
@@ -95,10 +143,22 @@ function carReset() {
 }
 
 function carMove() {
+    carSpeed *= 0.97;
+    if(keyHeld_Gas) {
+        carSpeed += 0.04;
+    }
+    if(keyHeld_Reverse) {
+        carSpeed -= 0.04;
+    }
+    if(keyHeld_TurnLeft) {
+        carAng -= 0.04;
+    }
+    if(keyHeld_TurnRight) {
+        carAng += 0.04;
+    }
+
 	carX += Math.cos(carAng) * carSpeed;
 	carY += Math.sin(carAng) * carSpeed;
-    carAng += 0.02;
-	
 }
 
 function isTrackAtColRow(col,row){
@@ -121,7 +181,11 @@ function carTrackHandling() {
 	   carTrackRow >= 0 && carTrackRow < TRACK_ROWS) {
 
 		if (isTrackAtColRow(carTrackCol,carTrackRow)) {
-            carSpeed *= -1
+            // next two lines fix bug where car was burried in wall
+            carX -= Math.cos(carAng) * carSpeed;
+            carY -= Math.sin(carAng) * carSpeed;
+ 
+            carSpeed *= -0.5;
 		} //end of track found
 	}	//end of valid col and row
 } //end of carTrackHandling func
