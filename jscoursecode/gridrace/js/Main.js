@@ -1,7 +1,7 @@
-
-
-
 var canvas, canvasContext;
+
+var blueCar = new carClass();
+var greenCar = new carClass();
 
 window.onload = function() {
 	canvas = document.getElementById('gameCanvas');
@@ -17,8 +17,15 @@ function imageLoadingDoneSoStartGame(){
     var framesPerSecond = 30;
 	setInterval(updateAll, 1000/framesPerSecond);
 	
-    setupInput();
-    carReset();
+	setupInput();
+
+    loadLevel(levelOne);
+}
+
+function loadLevel(whichLevel) {
+	trackGrid = whichLevel.slice();
+	greenCar.reset(otherCarPic, "Green Machine");
+	blueCar.reset(carPic, "Blue Devil");
 }
 
 function updateAll() {
@@ -28,11 +35,14 @@ function updateAll() {
 
 
 function moveAll() {
-	carMove();
-	carTrackHandling();
+	greenCar.move();
+	blueCar.move();
+	
 }
 
 function drawAll() {
 	drawTracks();
-    carDraw();
+	greenCar.draw();
+	blueCar.draw();
+	
 }

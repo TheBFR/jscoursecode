@@ -3,10 +3,10 @@ const KEY_UP_ARROW = 38;
 const KEY_RIGHT_ARROW = 39;
 const KEY_DOWN_ARROW = 40;
 
-var keyHeld_Gas = false;
-var keyHeld_Reverse = false;
-var keyHeld_TurnLeft = false;
-var keyHeld_TurnRight = false;
+const KEY_W = 87;
+const KEY_A = 65;
+const KEY_S = 83;
+const KEY_D = 68;
 
 var mouseX;
 var mouseY;
@@ -16,6 +16,9 @@ function setupInput() {
     
     document.addEventListener('keydown', keyPressed);
     document.addEventListener('keyup', keyReleased);
+
+    greenCar.setupInput(KEY_W, KEY_D, KEY_S, KEY_A);
+    blueCar.setupInput(KEY_UP_ARROW, KEY_RIGHT_ARROW, KEY_DOWN_ARROW, KEY_LEFT_ARROW);
     
 }
 
@@ -33,36 +36,29 @@ function updateMousePos(evt){
 	carSpeedY = -4;*/
 }
 
+function keySet(keyEvent, whichCar, setTo) {
+    if(keyEvent.keyCode == whichCar.controlKeyLeft) {
+        whichCar.keyHeld_TurnLeft = setTo;
+    }
+    if(keyEvent.keyCode == whichCar.controlKeyRight) {
+        whichCar.keyHeld_TurnRight = setTo;
+    }
+    if(keyEvent.keyCode == whichCar.controlKeyUp) {
+        whichCar.keyHeld_Gas = setTo;
+    }
+    if(keyEvent.keyCode == whichCar.controlKeyDown) {
+        whichCar.keyHeld_Reverse = setTo;
+    }
+}
+
 function keyPressed(evt) {
-   //console.log("Key pressed: "+evt.keyCode);
-   if(evt.keyCode == KEY_LEFT_ARROW) {
-       keyHeld_TurnLeft = true;
-   }
-   if(evt.keyCode == KEY_RIGHT_ARROW) {
-    keyHeld_TurnRight = true;
-   }
-   if(evt.keyCode == KEY_UP_ARROW) {
-    keyHeld_Gas = true;
-   }
-   if(evt.keyCode == KEY_DOWN_ARROW) {
-    keyHeld_Reverse = true;
-   }
-   //This was supposed to stop scrolling which I did not have issues with
-   //instead it broke F5 refresh from working so it has been removed
-   //evt.preventDefault();
+    //console.log("Key pressed: "+evt.keyCode);
+    keySet(evt, greenCar, true);
+    keySet(evt, blueCar, true);
+   
 }
 
 function keyReleased(evt) {
-   if(evt.keyCode == KEY_LEFT_ARROW) {
-       keyHeld_TurnLeft = false;
-   }
-   if(evt.keyCode == KEY_RIGHT_ARROW) {
-    keyHeld_TurnRight = false;
-   }
-   if(evt.keyCode == KEY_UP_ARROW) {
-    keyHeld_Gas = false;
-   }
-   if(evt.keyCode == KEY_DOWN_ARROW) {
-    keyHeld_Reverse = false;
-   }
+    keySet(evt, greenCar, false);
+    keySet(evt, blueCar, false);
 }
