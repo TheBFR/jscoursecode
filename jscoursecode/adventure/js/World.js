@@ -3,26 +3,26 @@ const WORLD_H = 50;
 const WORLD_GAP = 2;
 const WORLD_COLS = 16;
 const WORLD_ROWS = 12;
-var levelOne  = [4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-				 4, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-				 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-				 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1,
-				 1, 0, 0, 0, 1, 1, 1, 4, 4, 4, 4, 1, 1, 1, 0, 1,
-				 1, 0, 0, 1, 1, 0, 0, 1, 4, 4, 1, 1, 0, 0, 0, 1,
-				 1, 0, 0, 1, 0, 0, 0, 0, 1, 4, 1, 0, 0, 0, 0, 1,
-				 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 5, 0, 1,
-				 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1,
-				 1, 0, 0, 1, 0, 0, 5, 0, 0, 0, 5, 0, 0, 1, 0, 1,
-				 1, 2, 0, 1, 3, 3, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1,
-				 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 1, 1, 1,];
+var levelOne  = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+				 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 5, 0, 1, 1, 1, 1,
+				 1, 0, 4, 0, 4, 0, 1, 0, 2, 0, 1, 0, 1, 4, 4, 1,
+				 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, 5, 1, 1,
+				 1, 1, 1, 5, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1,
+				 1, 0, 0, 0, 0, 0, 0, 0, 4, 0, 1, 0, 4, 0, 1, 1,
+				 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1,
+				 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 4, 0, 1, 1,
+				 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1,
+				 1, 0, 5, 0, 5, 0, 5, 0, 3, 0, 1, 1, 1, 1, 1, 1,
+				 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1,
+				 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,];
 var worldGrid = []
 
 const WORLD_ROAD = 0;
 const WORLD_WALL = 1;
 const WORLD_PLAYERSTART = 2;
 const WORLD_GOAL = 3;
-const WORLD_TREE = 4;
-const WORLD_FLAG = 5;
+const WORLD_KEY = 4;
+const WORLD_DOOR = 5;
 
 //This function basically returns WORLD_WALL if you try to go outside of the "grid" so that you are stopped
 // buy code checking in Warrior.js move funtion
@@ -54,6 +54,11 @@ function rowColToArrayIndex(col, row) {
 	return col + WORLD_COLS * row;
 }
 
+function tileTypeHasTransparency(checkTileType) {
+	return (checkTileType == WORLD_GOAL ||
+			checkTileType == WORLD_KEY ||
+			checkTileType == WORLD_DOOR);
+}
 
 function drawWorlds() {
 
@@ -66,7 +71,11 @@ function drawWorlds() {
 			var arrayIndex = rowColToArrayIndex(eachCol, eachRow); 
 			var tileKindHere = worldGrid[arrayIndex];
 			var useImg = worldPics[tileKindHere];
+			//console.log(tileKindHere);
 
+			if( tileTypeHasTransparency(tileKindHere) ) {
+				canvasContext.drawImage(worldPics[WORLD_ROAD],drawTileX,drawTileY);
+			}
 			canvasContext.drawImage(useImg,drawTileX,drawTileY);
 			drawTileX += WORLD_W;
 			arrayIndex++;
